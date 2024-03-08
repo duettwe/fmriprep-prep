@@ -41,6 +41,7 @@ export num_fmris=${#fmri_list[@]}
 
 # Show a bit of info
 echo "Subject ${sub}, session ${ses}"
+echo "T1: ${t1_niigz}"
 echo "fMRIs (${num_fmris}): ${fmri_list[@]}"
 if [ -n "${rpefwd_niigz}" ]; then
     echo "RPE forward: ${rpefwd_niigz}"
