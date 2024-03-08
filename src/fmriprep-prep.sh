@@ -7,7 +7,7 @@ export t1_niigz=/INPUTS/t1.nii.gz
 export fmri_niigzs=/INPUTS/fmri.nii.gz
 export rpefwd_niigz=""
 export rperev_niigz=""
-export out_dir=/INPUTS/BIDS
+export bids_dir=/INPUTS/BIDS
 export sub=01
 export ses=01
 
@@ -21,7 +21,7 @@ while [[ $# -gt 0 ]]; do
         --t1_niigz)       export t1_niigz="$2";       shift; shift ;;
         --rpefwd_niigz)   export rpefwd_niigz="$2";   shift; shift ;;
         --rperev_niigz)   export rperev_niigz="$2";   shift; shift ;;
-        --out_dir)        export out_dir="$2";        shift; shift ;;
+        --bids_dir)       export bids_dir="$2";       shift; shift ;;
         --sub)            export sub="$2";            shift; shift ;;
         --ses)            export ses="$2";            shift; shift ;;
         --fmri_niigzs)
@@ -46,7 +46,7 @@ if [ -n "${rpefwd_niigz}" ]; then
     echo "RPE forward: ${rpefwd_niigz}"
     echo "RPE reverse: ${rperev_niigz}"
 else
-    echo "No RPE image specified"
+    echo "RPE images not specified"
 fi
 
 # Rename and relocate files according to bids func/fmap scheme
@@ -56,35 +56,44 @@ fi
 # We need to inject the PhaseEncodingDirection value for the +/- PE scans
 # because Philips doesn't provide this in the dicoms and therefore dcm2niix
 # doesn't either. We start with PhaseEncodingAxis and arbitrarily add
-# a '-' on the scan that was labeled 'rev' above. This is the function of
-# update_json.py
+# a '-' on the scan that was labeled 'rev' above. This is done in update_json.py
 
 # fMRIs
-mkdir -p "${out_dir}/sub-${sub}/ses-${ses}/func"
+mkdir -p "${bids_dir}/sub-${sub}/ses-${ses}/func"
 intended_tags=
 for fmri_niigz in ${fmri_list[@]}; do
+    
     fmri_json="${fmri_niigz%.nii.gz}.json"
     task=$(get_sanitized_series_description.py --jsonfile "${fmri_json}")
-    intended_tag="ses-${ses}/func/sub-${sub}_ses-${ses}_task-${task}_bold"
+    run=$(get_run.py --jsonfile "${fmri_json}")
+    
+    intended_tag="ses-${ses}/func/sub-${sub}_ses-${ses}_task-${task}_run-${run}_bold"
     fmri_tag="sub-${sub}/${intended_tag}"
-    cp "${fmri_niigz}" "${out_dir}/${fmri_tag}.nii.gz"
-    update_json.py --jsonfile ${fmri_json} --polarity + > "${out_dir}/${fmri_tag}.json"
-    intended_tags=(${intended_tags} "${intended_tag}")
+
+    cp "${fmri_niigz}" "${bids_dir}/${fmri_tag}.nii.gz"
+    update_json.py --jsonfile ${fmri_json} --polarity + > "${bids_dir}/${fmri_tag}.json"
+
+    intended_tags=(${intended_tags[@]} "${intended_tag}")
+
 done
 
 # TOPUP scans if they exist
 if [ -n "${rpefwd_niigz}" ]; then
-    mkdir -p "${out_dir}/sub-${sub}/ses-${ses}/fmap"
+
+    mkdir -p "${bids_dir}/sub-${sub}/ses-${ses}/fmap"
+
+    rpefwd_json="${rpefwd_niigz%.nii.gz}.json"
     rpefwd_tag="sub-${sub}/ses-${ses}/fmap/sub-${sub}_ses-${ses}_dir-fwd_epi"
-    cp "${rpefwd_niigz}" "${out_dir}/${rpefwd_tag}.nii.gz"
+    cp "${rpefwd_niigz}" "${bids_dir}/${rpefwd_tag}.nii.gz"
+    update_json.py --jsonfile ${rpefwd_json} --polarity + --intendedfor ${intended_tags[@]} > "${bids_dir}/${rpefwd_tag}.json"
+
+    rperev_json="${rperev_niigz%.nii.gz}.json"
     rperev_tag="sub-${sub}/ses-${ses}/fmap/sub-${sub}_ses-${ses}_dir-rev_epi"
-    cp "${rperev_niigz}" "${out_dir}/${rperev_tag}.nii.gz"
+    cp "${rperev_niigz}" "${bids_dir}/${rperev_tag}.nii.gz"
+    update_json.py --jsonfile ${rperev_json} --polarity + --intendedfor ${intended_tags[@]} > "${bids_dir}/${rperev_tag}.json"
+
 fi
 
-# FIXME we are here. Fix update_json.py to insert multiple intended_for tags
-update_json.py --jsonfile ${fwd_json} --polarity + --intendedfor "${int_tag}" > INPUTS/${fwd_tag}.json 
-update_json.py --jsonfile ${rev_json} --polarity - --intendedfor "${int_tag}" > INPUTS/${rev_tag}.json
-
 # Finally, the required dataset description file
-echo '{"Name": "Ready for fmriprep", "BIDSVersion": "1.0.2"}' > "${out_dir}/dataset_description.json"
+echo '{"Name": "Ready for fmriprep", "BIDSVersion": "1.0.2"}' > "${bids_dir}/dataset_description.json"
 
