@@ -58,6 +58,13 @@ fi
 # doesn't either. We start with PhaseEncodingAxis and arbitrarily add
 # a '-' on the scan that was labeled 'rev' above. This is done in update_json.py
 
+# T1 scan
+mkdir -p "${bids_dir}/sub-${sub}/ses-${ses}/anat"
+t1_tag="sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_T1w"
+t1_json="${t1_niigz%.nii.gz}.json"
+cp ${t1_niigz} INPUTS/${t1_tag}.nii.gz
+cp ${t1_json} INPUTS/${t1_tag}.json
+
 # fMRIs
 mkdir -p "${bids_dir}/sub-${sub}/ses-${ses}/func"
 intended_tags=
