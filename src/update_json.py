@@ -7,7 +7,7 @@ import sys
 parser = argparse.ArgumentParser()
 parser.add_argument('--jsonfile')
 parser.add_argument('--polarity')
-parser.add_argument('--intendedfor')
+parser.add_argument('--intendedfor', nargs='*')
 args = parser.parse_args()
 
 with open(args.jsonfile) as f:
