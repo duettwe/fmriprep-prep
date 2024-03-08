@@ -81,7 +81,7 @@ for fmri_niigz in ${fmri_list[@]}; do
     cp "${fmri_niigz}" "${bids_dir}/${fmri_tag}.nii.gz"
     update_json.py --jsonfile ${fmri_json} --polarity + > "${bids_dir}/${fmri_tag}.json"
 
-    intended_tags=(${intended_tags[@]} "${intended_tag}")
+    intended_tags=(${intended_tags[@]} "${intended_tag}.nii.gz")
 
 done
 
