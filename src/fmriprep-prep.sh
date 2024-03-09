@@ -79,7 +79,8 @@ for fmri_niigz in ${fmri_list[@]}; do
     fmri_tag="sub-${sub}/${intended_tag}"
 
     cp "${fmri_niigz}" "${bids_dir}/${fmri_tag}.nii.gz"
-    update_json.py --jsonfile ${fmri_json} --polarity + > "${bids_dir}/${fmri_tag}.json"
+    update_json.py --jsonfile ${fmri_json} --polarity + \
+        > "${bids_dir}/${fmri_tag}.json"
 
     intended_tags=(${intended_tags[@]} "${intended_tag}.nii.gz")
 
@@ -93,15 +94,17 @@ if [ -n "${rpefwd_niigz}" ]; then
     rpefwd_json="${rpefwd_niigz%.nii.gz}.json"
     rpefwd_tag="sub-${sub}/ses-${ses}/fmap/sub-${sub}_ses-${ses}_dir-fwd_epi"
     cp "${rpefwd_niigz}" "${bids_dir}/${rpefwd_tag}.nii.gz"
-    update_json.py --jsonfile ${rpefwd_json} --polarity + --intendedfor ${intended_tags[@]} > "${bids_dir}/${rpefwd_tag}.json"
+    update_json.py --jsonfile ${rpefwd_json} --polarity + --intendedfor ${intended_tags[@]} \
+        > "${bids_dir}/${rpefwd_tag}.json"
 
     rperev_json="${rperev_niigz%.nii.gz}.json"
     rperev_tag="sub-${sub}/ses-${ses}/fmap/sub-${sub}_ses-${ses}_dir-rev_epi"
     cp "${rperev_niigz}" "${bids_dir}/${rperev_tag}.nii.gz"
-    update_json.py --jsonfile ${rperev_json} --polarity - --intendedfor ${intended_tags[@]} > "${bids_dir}/${rperev_tag}.json"
+    update_json.py --jsonfile ${rperev_json} --polarity - --intendedfor ${intended_tags[@]} \
+        > "${bids_dir}/${rperev_tag}.json"
 
 fi
 
 # Finally, the required dataset description file
-echo '{"Name": "Ready for fmriprep", "BIDSVersion": "1.0.2"}' > "${bids_dir}/dataset_description.json"
+echo '{"Name": "Ready for fmriprep", "BIDSVersion": "1.9.0"}' > "${bids_dir}/dataset_description.json"
 
