@@ -98,7 +98,7 @@ if [ -n "${rpefwd_niigz}" ]; then
     rperev_json="${rperev_niigz%.nii.gz}.json"
     rperev_tag="sub-${sub}/ses-${ses}/fmap/sub-${sub}_ses-${ses}_dir-rev_epi"
     cp "${rperev_niigz}" "${bids_dir}/${rperev_tag}.nii.gz"
-    update_json.py --jsonfile ${rperev_json} --polarity + --intendedfor ${intended_tags[@]} > "${bids_dir}/${rperev_tag}.json"
+    update_json.py --jsonfile ${rperev_json} --polarity - --intendedfor ${intended_tags[@]} > "${bids_dir}/${rperev_tag}.json"
 
 fi
 
