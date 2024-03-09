@@ -13,6 +13,11 @@ args = parser.parse_args()
 with open(args.jsonfile) as f:
     jobj = json.loads(f.read())
     
+    # Verify that this is a Philips scan before applying the Philips-
+    # specific fixes for TotalReadoutTime and PhaseEncodingDirection
+    if jobj['Manufacturer'] != 'Philips':
+        raise Exception(f'Manufacturer is {jobj["Manufacturer"]} - expecting Philips')
+    
     jobj['TotalReadoutTime'] = jobj['EstimatedTotalReadoutTime']
 
     if args.polarity=='+':
