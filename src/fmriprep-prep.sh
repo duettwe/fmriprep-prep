@@ -7,6 +7,7 @@ export t1_niigz=/INPUTS/t1.nii.gz
 export fmri_niigzs=/INPUTS/fmri.nii.gz
 export rpefwd_niigz=""
 export rperev_niigz=""
+export slicetiming=""
 export bids_dir=/INPUTS/BIDS
 export sub=01
 export ses=01
@@ -24,6 +25,7 @@ while [[ $# -gt 0 ]]; do
         --bids_dir)       export bids_dir="$2";       shift; shift ;;
         --sub)            export sub="$2";            shift; shift ;;
         --ses)            export ses="$2";            shift; shift ;;
+        --slicetiming)    export slicetiming="$2";    shift; shift ;;
         --fmri_niigzs)
             next="$2"
             while ! [[ "$next" =~ -.* ]] && [[ $# > 1 ]]; do
@@ -79,7 +81,7 @@ for fmri_niigz in ${fmri_list[@]}; do
     fmri_tag="sub-${sub}/${intended_tag}"
 
     cp "${fmri_niigz}" "${bids_dir}/${fmri_tag}.nii.gz"
-    update_json.py --jsonfile ${fmri_json} --polarity + \
+    update_json.py --fmri_niigz ${fmri_niigz} --polarity + --slicetiming "${slicetiming}" \
         > "${bids_dir}/${fmri_tag}.json"
 
     intended_tags=(${intended_tags[@]} "${intended_tag}.nii.gz")
@@ -94,13 +96,13 @@ if [ -n "${rpefwd_niigz}" ]; then
     rpefwd_json="${rpefwd_niigz%.nii.gz}.json"
     rpefwd_tag="sub-${sub}/ses-${ses}/fmap/sub-${sub}_ses-${ses}_dir-fwd_epi"
     cp "${rpefwd_niigz}" "${bids_dir}/${rpefwd_tag}.nii.gz"
-    update_json.py --jsonfile ${rpefwd_json} --polarity + --intendedfor ${intended_tags[@]} \
+    update_json.py --fmri_niigz ${rpefwd_niigz} --polarity + --intendedfor ${intended_tags[@]} \
         > "${bids_dir}/${rpefwd_tag}.json"
 
     rperev_json="${rperev_niigz%.nii.gz}.json"
     rperev_tag="sub-${sub}/ses-${ses}/fmap/sub-${sub}_ses-${ses}_dir-rev_epi"
     cp "${rperev_niigz}" "${bids_dir}/${rperev_tag}.nii.gz"
-    update_json.py --jsonfile ${rperev_json} --polarity - --intendedfor ${intended_tags[@]} \
+    update_json.py --fmri_niigz ${rperev_niigz} --polarity - --intendedfor ${intended_tags[@]} \
         > "${bids_dir}/${rperev_tag}.json"
 
 fi
