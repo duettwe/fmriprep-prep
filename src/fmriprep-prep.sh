@@ -52,6 +52,9 @@ else
     echo "RPE images not specified"
 fi
 
+# Check our python
+envtest.py
+
 # Rename and relocate files according to bids func/fmap scheme
 # https://bids-specification.readthedocs.io/en/stable/modality-specific-files/magnetic-resonance-imaging-data.html
 # #case-4-multiple-phase-encoded-directions-pepolar
