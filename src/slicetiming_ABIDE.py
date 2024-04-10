@@ -40,7 +40,7 @@ elif site=='Trinity':
 elif site=='UCLA':
     ordering = 'Siemens_interleaved_k'
 elif site=='UM':
-    ordering = 'GE_interleaved_k'
+    ordering = 'GE_interleaved4_even_k'
 elif site=='USM':
     ordering = 'Siemens_interleaved_k'
 elif site=='Yale':

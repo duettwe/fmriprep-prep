@@ -82,20 +82,19 @@ if args.slicetiming:
         if nslices % 2 == 0:  # Even number of slices
             jobj['SliceTiming'][1::2] = basetimes[0:math.ceil(nslices/2)]
             jobj['SliceTiming'][0::2] = basetimes[math.ceil(nslices/2):]
-        else:
+        else: # Odd number of slices
             jobj['SliceTiming'][0::2] = basetimes[0:math.ceil(nslices/2)]
             jobj['SliceTiming'][1::2] = basetimes[math.ceil(nslices/2):]
 
-    elif args.slicetiming in ['GE_interleaved_k']:
-        # FIXME Complicated GE scheme
+    elif args.slicetiming in ['GE_interleaved4_even_k']:
+        # FIXME how to get this ordering?
         raise Exception(f'Cannot handle slice timing of {args.slicetiming}')
-
+        
     elif args.slicetiming in ['none']:
         print('No slice timing information added to .json (slicetiming = none)')
 
     else:
         raise Exception(f'Cannot handle slice timing of {args.slicetiming}')
-
 
 ## Print it out
 print(json.dumps(jobj, indent = 4))
