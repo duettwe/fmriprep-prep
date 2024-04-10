@@ -12,39 +12,41 @@ args = parser.parse_args()
 site = args.subject_label.split('_')[0]
 
 if site=='Caltech':
-    print('Siemens_interleaved_k')
+    ordering = 'Siemens_interleaved_k'
 elif site=='CMU':
-    print('Siemens_interleaved_k')
+    ordering = 'Siemens_interleaved_k'
 elif site=='KKI':
-    print('Philips_ASCEND_k')
+    ordering = 'Philips_ASCEND_k'
 elif site=='Leuven':
-    print('Philips_ASCEND_k')
+    ordering = 'Philips_ASCEND_k'
 elif site=='MaxMun':
-    print('Siemens_interleaved_k')
+    ordering = 'Siemens_interleaved_k'
 elif site=='NYU':
-    print('Siemens_interleaved_k')
+    ordering = 'Siemens_interleaved_k'
 elif site=='OHSU':
-    print('Siemens_interleaved_k')
+    ordering = 'Siemens_interleaved_k'
 elif site=='Olin':
-    print('Siemens_ascending_k')
+    ordering = 'Siemens_ascending_k'
 elif site=='Pitt':
-    print('Siemens_interleaved_k')
+    ordering = 'Siemens_interleaved_k'
 elif site=='SBL':
-    print('Philips_DESCEND_k')
+    ordering = 'Philips_DESCEND_k'
 elif site=='SDSU':
-    print('none')
+    ordering = 'none'
 elif site=='Stanford':
-    print('none')
+    ordering = 'none'
 elif site=='Trinity':
-    print('Philips_ASCEND_k')
+    ordering = 'Philips_ASCEND_k'
 elif site=='UCLA':
-    print('Siemens_interleaved_k')
+    ordering = 'Siemens_interleaved_k'
 elif site=='UM':
-    print('GE_interleaved_k')
+    ordering = 'GE_interleaved_k'
 elif site=='USM':
-    print('Siemens_interleaved_k')
+    ordering = 'Siemens_interleaved_k'
 elif site=='Yale':
-    print('Siemens_interleaved_k')
+    ordering = 'Siemens_interleaved_k'
 else:
     raise Exception(f'Unknown ABIDE site {site} for subject {args.subject_label}')
+
+print(ordering)
 

@@ -45,6 +45,8 @@ if args.intendedfor:
 
 if args.slicetiming:
 
+    print(f'Inserting slice timing codes for scheme {args.slicetiming}')
+
     # Get number of slices and TR from .nii.gz. Assume
     # slice axis is the third one.
     nii = nibabel.load(args.fmri_niigz)
@@ -62,7 +64,7 @@ if args.slicetiming:
     if abs(tr2-tr)>0.001:
         raise Exception(f'TR in {jsonfile} does not match {args.fmri_niigz}')
 
-    # Get our base list of ascending slice times that we will re-order
+    # Get a base list of ascending slice times that we will re-order
     basetimes = [x / nslices * tr for x in range(0,nslices)]
 
     # We can only handle certain specific cases
@@ -86,6 +88,7 @@ if args.slicetiming:
 
     elif args.slicetiming in ['GE_interleaved_k']:
         # FIXME Complicated GE scheme
+        raise Exception(f'Cannot handle slice timing of {args.slicetiming}')
 
     elif args.slicetiming in ['none']:
         print('No slice timing information added to .json (slicetiming = none)')
