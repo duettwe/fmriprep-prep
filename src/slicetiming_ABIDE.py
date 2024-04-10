@@ -12,41 +12,39 @@ args = parser.parse_args()
 site = args.subject_label.split('_')[0]
 
 if site=='Caltech':
-    print(site)
+    print('Siemens_interleaved_k')
 elif site=='CMU':
-    print(site)
+    print('Siemens_interleaved_k')
 elif site=='KKI':
-    print(site)
+    print('Philips_ASCEND_k')
 elif site=='Leuven':
-    print(site)
+    print('Philips_ASCEND_k')
 elif site=='MaxMun':
-    print(site)
+    print('Siemens_interleaved_k')
 elif site=='NYU':
-    print(site)
+    print('Siemens_interleaved_k')
 elif site=='OHSU':
-    print(site)
+    print('Siemens_interleaved_k')
 elif site=='Olin':
-    print(site)
+    print('Siemens_ascending_k')
 elif site=='Pitt':
-    print(site)
+    print('Siemens_interleaved_k')
 elif site=='SBL':
-    print(site)
+    print('Philips_DESCEND_k')
 elif site=='SDSU':
-    print(site)
+    print('none')
 elif site=='Stanford':
-    print(site)
+    print('none')
 elif site=='Trinity':
-    print(site)
+    print('Philips_ASCEND_k')
 elif site=='UCLA':
-    print(site)
+    print('Siemens_interleaved_k')
 elif site=='UM':
-    print(site)
+    print('GE_interleaved_k')
 elif site=='USM':
-    print(site)
+    print('Siemens_interleaved_k')
 elif site=='Yale':
-    print(site)
+    print('Siemens_interleaved_k')
 else:
     raise Exception(f'Unknown ABIDE site {site} for subject {args.subject_label}')
-
-
 

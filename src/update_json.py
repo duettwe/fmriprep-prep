@@ -64,6 +64,8 @@ if args.slicetiming:
     if args.slicetiming=='Philips_ASCEND_k':
         jobj['SliceEncodingDirection'] = 'k'
         jobj['SliceTiming'] = list(range(0,nslices) / nslices * tr)
+    elif args.slicetiming=='none':
+        print('No slice timing information added to .json (slicetiming = none)')
     else:
         raise Exception(f'Cannot handle slice timing of {args.slicetiming}')
 
