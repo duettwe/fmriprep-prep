@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import math
 import nibabel
 import sys
 
@@ -39,6 +40,8 @@ if args.intendedfor:
 
 
 ## Slice timing
+# Assumes slices are evenly spaced in the TR (i.e. not a sparse
+# acquisition, and any extra inter-TR delay is minimal)
 
 if args.slicetiming:
 
@@ -59,13 +62,34 @@ if args.slicetiming:
     if abs(tr2-tr)>0.001:
         raise Exception(f'TR in {jsonfile} does not match {args.fmri_niigz}')
 
+    # Get our base list of ascending slice times that we will re-order
+    basetimes = [x / nslices * tr for x in range(0,nslices)]
+
     # We can only handle certain specific cases
-    #    Philips_ASCEND_k: ascending on third axis
-    if args.slicetiming=='Philips_ASCEND_k':
+    if args.slicetiming in ['Philips_ASCEND_k', 'Siemens_ascending_k']:
         jobj['SliceEncodingDirection'] = 'k'
-        jobj['SliceTiming'] = list(range(0,nslices) / nslices * tr)
-    elif args.slicetiming=='none':
+        jobj['SliceTiming'] = basetimes
+
+    elif args.slicetiming in ['Philips_DESCEND_k', 'Siemens_descending_k']:
+        jobj['SliceEncodingDirection'] = 'k'
+        jobj['SliceTiming'] = list(reversed(basetimes))
+
+    elif args.slicetiming in ['Siemens_interleaved_k']:
+        jobj['SliceEncodingDirection'] = 'k'
+        jobj['SliceTiming'] = [0 for x in basetimes]
+        if nslices % 2 == 0:  # Even number of slices
+            jobj['SliceTiming'][1::2] = basetimes[0:math.ceil(nslices/2)]
+            jobj['SliceTiming'][0::2] = basetimes[math.ceil(nslices/2):]
+        else:
+            jobj['SliceTiming'][0::2] = basetimes[0:math.ceil(nslices/2)]
+            jobj['SliceTiming'][1::2] = basetimes[math.ceil(nslices/2):]
+
+    elif args.slicetiming in ['GE_interleaved_k']:
+        # FIXME Complicated GE scheme
+
+    elif args.slicetiming in ['none']:
         print('No slice timing information added to .json (slicetiming = none)')
+
     else:
         raise Exception(f'Cannot handle slice timing of {args.slicetiming}')
 
