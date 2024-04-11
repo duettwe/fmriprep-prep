@@ -86,9 +86,11 @@ if args.slicetiming:
             jobj['SliceTiming'][0::2] = basetimes[0:math.ceil(nslices/2)]
             jobj['SliceTiming'][1::2] = basetimes[math.ceil(nslices/2):]
 
-    elif args.slicetiming in ['GE_interleaved4_even_k']:
-        # FIXME how to get this ordering?
-        raise Exception(f'Cannot handle slice timing of {args.slicetiming}')
+    elif args.slicetiming in ['GE_interleaved_k']:
+        jobj['SliceEncodingDirection'] = 'k'
+        jobj['SliceTiming'] = [0 for x in basetimes]
+        jobj['SliceTiming'][0::2] = basetimes[0:math.ceil(nslices/2)]
+        jobj['SliceTiming'][1::2] = basetimes[math.ceil(nslices/2):]
         
     elif args.slicetiming in ['none']:
         print('No slice timing information added to .json (slicetiming = none)')
