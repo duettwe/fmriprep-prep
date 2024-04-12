@@ -9,7 +9,6 @@ export rpefwd_niigz=""
 export rperev_niigz=""
 export slicetiming=""
 export fmritask=fmritask
-export fmrirun=1
 export bids_dir=/INPUTS/BIDS
 export sub=01
 export ses=01
@@ -30,8 +29,7 @@ while [[ $# -gt 0 ]]; do
         --ses)            export ses="$2";            shift; shift ;;
         --slicetiming)    export slicetiming="$2";    shift; shift ;;
         --fmritask)       export fmritask="$2";       shift; shift ;;
-        --fmrirun)        export fmrirun="$2";        shift; shift ;;
-        --fmri_niigzs)
+    --fmri_niigzs)
             next="$2"
             while ! [[ "$next" =~ -.* ]] && [[ $# > 1 ]]; do
                 fmri_list+=("$next")
@@ -67,11 +65,14 @@ t1_tag="sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_T1w"
 cp "${t1_niigz}" "${bids_dir}/${t1_tag}.nii.gz"
 
 # fMRIs
+fmrirun=$((0))
 mkdir -p "${bids_dir}/sub-${sub}/ses-${ses}/func"
 for fmri_niigz in ${fmri_list[@]}; do
     
     fmri_json="${fmri_niigz%.nii.gz}.json"
     
+    # Start run at 1 and count up since we don't have json to get it from
+    (( fmrirun++ ))
     intended_tag="ses-${ses}/func/sub-${sub}_ses-${ses}_task-${fmritask}_run-${fmrirun}_bold"
     fmri_tag="sub-${sub}/${intended_tag}"
 
