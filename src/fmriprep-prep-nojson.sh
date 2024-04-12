@@ -56,6 +56,10 @@ if [ "${slicetiming}" = "ABIDE" ]; then
     export slicetiming=$(slicetiming_ABIDE.py --subject_label "${sub}")
 fi
 
+# If subject, session have _, drop it because it's not compatible with BIDS
+# file naming
+sub=${sub//_/}
+ses=${ses//_/}
 
 # Rename and relocate files according to bids scheme
 

@@ -21,7 +21,7 @@ nslices = nii.header['dim'][3]
 tr = nii.header['pixdim'][4]
 
 # fmriprep minimum needed fields
-json_data['RepetitionTime'] = f'{tr}'
+json_data['RepetitionTime'] = float(tr)
 
 ## Slice timing
 # Assumes slices are evenly spaced in the TR (i.e. not a sparse
