@@ -45,8 +45,6 @@ if args.intendedfor:
 
 if args.slicetiming:
 
-    print(f'Inserting slice timing codes for scheme {args.slicetiming}')
-
     # Get number of slices and TR from .nii.gz. Assume
     # slice axis is the third one.
     nii = nibabel.load(args.fmri_niigz)
@@ -93,7 +91,7 @@ if args.slicetiming:
         jobj['SliceTiming'][1::2] = basetimes[math.ceil(nslices/2):]
         
     elif args.slicetiming in ['none']:
-        print('No slice timing information added to .json (slicetiming = none)')
+        pass
 
     else:
         raise Exception(f'Cannot handle slice timing of {args.slicetiming}')
