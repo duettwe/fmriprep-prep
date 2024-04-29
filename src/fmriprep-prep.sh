@@ -52,14 +52,16 @@ else
     echo "RPE images not specified"
 fi
 
-# Check our python
-envtest.py
-
 # If slicetiming is 'ABIDE', use subject label to determine actual ordering
 # and update the value of slicetiming
 if [ "${slicetiming}" = "ABIDE" ]; then
     export slicetiming=$(slicetiming_ABIDE.py --subject_label "${sub}")
 fi
+
+# If subject, session have _, drop it because it's not compatible with BIDS
+# file naming
+sub=${sub//_/}
+ses=${ses//_/}
 
 # Rename and relocate files according to bids func/fmap scheme
 # https://bids-specification.readthedocs.io/en/stable/modality-specific-files/magnetic-resonance-imaging-data.html
