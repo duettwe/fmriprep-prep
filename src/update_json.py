@@ -23,7 +23,7 @@ with open(jsonfile) as f:
 
 # Verify that this is a Philips scan before applying the Philips-
 # specific fixes for TotalReadoutTime and PhaseEncodingDirection
-if jobj['Manufacturer'] != 'Philips':
+if not jobj['Manufacturer'].startswith('Philips'):
     raise Exception(f'Manufacturer is {jobj["Manufacturer"]} - expecting Philips')
 
 jobj['TotalReadoutTime'] = jobj['EstimatedTotalReadoutTime']
