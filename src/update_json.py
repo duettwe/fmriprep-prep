@@ -26,7 +26,12 @@ with open(jsonfile) as f:
 if not jobj['Manufacturer'].startswith('Philips'):
     raise Exception(f'Manufacturer is {jobj["Manufacturer"]} - expecting Philips')
 
-jobj['TotalReadoutTime'] = jobj['EstimatedTotalReadoutTime']
+if not 'TotalReadoutTime' in jobj:
+    if 'EstimatedTotalReadoutTime' in jobj:
+        jobj['TotalReadoutTime'] = jobj['EstimatedTotalReadoutTime']
+    else:
+        jobj['TotalReadoutTime'] = 0
+        print('WARNING - no TotalReadoutTime or EstimatedTotalReadoutTime found - using 0')
 
 if args.polarity=='+':
     jobj['PhaseEncodingDirection'] = jobj['PhaseEncodingAxis']
