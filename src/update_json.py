@@ -30,8 +30,8 @@ if not 'TotalReadoutTime' in jobj:
     if 'EstimatedTotalReadoutTime' in jobj:
         jobj['TotalReadoutTime'] = jobj['EstimatedTotalReadoutTime']
     else:
+        # Use 0 for TotalReadoutTime
         jobj['TotalReadoutTime'] = 0
-        print('WARNING - no TotalReadoutTime or EstimatedTotalReadoutTime found - using 0')
 
 if 'PhaseEncodingAxis' in jobj:
     if args.polarity=='+':
@@ -40,9 +40,6 @@ if 'PhaseEncodingAxis' in jobj:
         jobj['PhaseEncodingDirection'] = jobj['PhaseEncodingAxis'] + '-'
     else:
         raise Exception(f'Unknown polarity {args.polarity}')
-else:
-    print('WARNING - no PhaseEncodingAxis found - not updating PhaseEncodingDirection')
-
 
 if args.intendedfor:
     jobj['IntendedFor'] = args.intendedfor
