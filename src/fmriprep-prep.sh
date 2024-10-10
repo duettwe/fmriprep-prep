@@ -11,6 +11,7 @@ export slicetiming=""
 export bids_dir=/INPUTS/BIDS
 export sub=01
 export ses=01
+export task=
 
 # Parse input options. Bit of extra gymnastics to allow multiple files
 # for fMRIs. We will assume all .nii.gz have a matching .json sidecar
@@ -26,6 +27,7 @@ while [[ $# -gt 0 ]]; do
         --sub)            export sub="$2";            shift; shift ;;
         --ses)            export ses="$2";            shift; shift ;;
         --slicetiming)    export slicetiming="$2";    shift; shift ;;
+        --task)           export task="$2";           shift; shift ;;
         --fmri_niigzs)
             next="$2"
             while ! [[ "$next" =~ -.* ]] && [[ $# > 1 ]]; do
@@ -87,7 +89,9 @@ intended_tags=
 for fmri_niigz in ${fmri_list[@]}; do
     
     fmri_json="${fmri_niigz%.nii.gz}.json"
-    task=$(get_sanitized_series_description.py --jsonfile "${fmri_json}")
+    if [ -z "${task}" ]; then
+        task=$(get_sanitized_series_description.py --jsonfile "${fmri_json}")
+    fi
     run=$(get_run.py --jsonfile "${fmri_json}")
     
     intended_tag="ses-${ses}/func/sub-${sub}_ses-${ses}_task-${task}_run-${run}_bold"
