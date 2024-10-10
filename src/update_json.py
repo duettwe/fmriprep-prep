@@ -26,6 +26,7 @@ with open(jsonfile) as f:
 if not jobj['Manufacturer'].startswith('Philips'):
     raise Exception(f'Manufacturer is {jobj["Manufacturer"]} - expecting Philips')
 
+# Update readout time
 if not 'TotalReadoutTime' in jobj:
     if 'EstimatedTotalReadoutTime' in jobj:
         jobj['TotalReadoutTime'] = jobj['EstimatedTotalReadoutTime']
@@ -33,6 +34,11 @@ if not 'TotalReadoutTime' in jobj:
         # Use 0 for TotalReadoutTime
         jobj['TotalReadoutTime'] = 0
 
+# Check for bogus PE dir with ? and remove if present
+if jobj['PhaseEncodingDirection'].endswith('?'):
+    jobj['PhaseEncodingDirection'] = jobj['PhaseEncodingDirection'][:-1]
+
+# Add PE polarity if we have PhaseEncodingAxis
 if 'PhaseEncodingAxis' in jobj:
     if args.polarity=='+':
         jobj['PhaseEncodingDirection'] = jobj['PhaseEncodingAxis']
