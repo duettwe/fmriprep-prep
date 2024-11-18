@@ -74,7 +74,19 @@ if args.slicetiming:
     if abs(tr2-tr)>0.001:
         raise Exception(f'TR in {jsonfile} does not match {args.fmri_niigz}')
 
-    # Get a base list of ascending slice times that we will re-order
+    # Philips multiband factor 3
+    if args.slicetiming in ['Philips_MB3_k']:
+        F = 3
+        M = nslices/F
+        if M != round(M):
+            raise Exception(f'Number of slice times {M} not a multiple of MB factor {F}')
+        basetimes = [x * tr/M for x in list(range(round(M)))]
+        tmplist = list(range(1, M+1, 2)) + list(range(2, M+1, 2))
+        slicelist = tmplist + [x + M for x in tmplist] + [x + 2*M for x in tmplist]
+        # FIXME WE ARE HERE. Find time of each slice based on these lists basetimes and slicelist
+        FIXME
+
+    # Otherwise get a base list of ascending slice times that we will re-order
     basetimes = [x / nslices * tr for x in range(0,nslices)]
 
     # We can only handle certain specific cases
