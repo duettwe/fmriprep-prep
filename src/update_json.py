@@ -6,6 +6,45 @@ import math
 import nibabel
 import sys
 
+def slicetimes_Philips_MB3(nslices, trsec):
+
+    # Multiband factor (hard coded)
+    F = 3
+
+    # Number of multislice acquisitions
+    M = args.nslices/F
+    if M != int(M):
+        raise Exception(f'Number of slice times {M} not a multiple of MB factor {F}')
+    M = int(M)
+
+    # List of actual slice acq times in temporal order
+    basetimes = [x * args.trsec/M for x in list(range(M))]
+
+    # Slice positions (1-based) in same order as basetimes
+    slice1 = list(range(1, M+1, 2)) + list(range(2, M+1, 2))
+    slice2 = [x + M for x in slice1]
+    slice3 = [x + 2 * M for x in slice1]
+
+    # Build a dict of slice position and acq time
+    d = {
+        **dict(zip(slice1, basetimes)),
+        **dict(zip(slice2, basetimes)),
+        **dict(zip(slice3, basetimes)),
+        }
+
+    # Sort slice times by slice position - this is our final BIDS-style
+    # list of slice times
+    slices = [k for k in sorted(d.keys())]
+    if not slices==list(range(1, args.nslices + 1)):
+        raise Exception('Unexpected mismatch in slice numbering')
+    times_by_slice = [d[k] for k in sorted(d.keys())]
+
+    return times_by_slice
+
+
+
+## 
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--fmri_niigz')
 parser.add_argument('--polarity')
@@ -74,17 +113,10 @@ if args.slicetiming:
     if abs(tr2-tr)>0.001:
         raise Exception(f'TR in {jsonfile} does not match {args.fmri_niigz}')
 
-    # Philips multiband factor 3
+    # Special handling for Philips multiband factor 3
     if args.slicetiming in ['Philips_MB3_k']:
-        F = 3
-        M = nslices/F
-        if M != round(M):
-            raise Exception(f'Number of slice times {M} not a multiple of MB factor {F}')
-        basetimes = [x * tr/M for x in list(range(round(M)))]
-        tmplist = list(range(1, M+1, 2)) + list(range(2, M+1, 2))
-        slicelist = tmplist + [x + M for x in tmplist] + [x + 2*M for x in tmplist]
-        # FIXME WE ARE HERE. Find time of each slice based on these lists basetimes and slicelist
-        FIXME
+        jobj['SliceEncodingDirection'] = 'k'
+        jobj['SliceTiming'] = slicetimes_Philips_MB3(nslices, tr)
 
     # Otherwise get a base list of ascending slice times that we will re-order
     basetimes = [x / nslices * tr for x in range(0,nslices)]
