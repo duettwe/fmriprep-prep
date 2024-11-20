@@ -12,13 +12,13 @@ def slicetimes_Philips_MB3(nslices, trsec):
     F = 3
 
     # Number of multislice acquisitions
-    M = args.nslices/F
+    M = nslices/F
     if M != int(M):
         raise Exception(f'Number of slice times {M} not a multiple of MB factor {F}')
     M = int(M)
 
     # List of actual slice acq times in temporal order
-    basetimes = [x * args.trsec/M for x in list(range(M))]
+    basetimes = [x * trsec/M for x in list(range(M))]
 
     # Slice positions (1-based) in same order as basetimes
     slice1 = list(range(1, M+1, 2)) + list(range(2, M+1, 2))
@@ -35,7 +35,7 @@ def slicetimes_Philips_MB3(nslices, trsec):
     # Sort slice times by slice position - this is our final BIDS-style
     # list of slice times
     slices = [k for k in sorted(d.keys())]
-    if not slices==list(range(1, args.nslices + 1)):
+    if not slices==list(range(1, nslices + 1)):
         raise Exception('Unexpected mismatch in slice numbering')
     times_by_slice = [d[k] for k in sorted(d.keys())]
 
@@ -74,7 +74,7 @@ if not 'TotalReadoutTime' in jobj:
         jobj['TotalReadoutTime'] = 0
 
 # Check for bogus PE dir with ? and remove if present
-if jobj['PhaseEncodingDirection'].endswith('?'):
+if ('PhaseEncodingDirection' in jobj) and (jobj['PhaseEncodingDirection'].endswith('?')):
     jobj['PhaseEncodingDirection'] = jobj['PhaseEncodingDirection'][:-1]
 
 # Add PE polarity if we have PhaseEncodingAxis
@@ -118,19 +118,18 @@ if args.slicetiming:
         jobj['SliceEncodingDirection'] = 'k'
         jobj['SliceTiming'] = slicetimes_Philips_MB3(nslices, tr)
 
-    # Otherwise get a base list of ascending slice times that we will re-order
-    basetimes = [x / nslices * tr for x in range(0,nslices)]
-
-    # We can only handle certain specific cases
-    if args.slicetiming in ['Philips_ASCEND_k', 'Siemens_ascending_k']:
+    elif args.slicetiming in ['Philips_ASCEND_k', 'Siemens_ascending_k']:
+        basetimes = [x / nslices * tr for x in range(0,nslices)]
         jobj['SliceEncodingDirection'] = 'k'
         jobj['SliceTiming'] = basetimes
 
     elif args.slicetiming in ['Philips_DESCEND_k', 'Siemens_descending_k']:
+        basetimes = [x / nslices * tr for x in range(0,nslices)]
         jobj['SliceEncodingDirection'] = 'k'
         jobj['SliceTiming'] = list(reversed(basetimes))
 
     elif args.slicetiming in ['Siemens_interleaved_k']:
+        basetimes = [x / nslices * tr for x in range(0,nslices)]
         jobj['SliceEncodingDirection'] = 'k'
         jobj['SliceTiming'] = [0 for x in basetimes]
         if nslices % 2 == 0:  # Even number of slices
@@ -141,6 +140,7 @@ if args.slicetiming:
             jobj['SliceTiming'][1::2] = basetimes[math.ceil(nslices/2):]
 
     elif args.slicetiming in ['GE_interleaved_k']:
+        basetimes = [x / nslices * tr for x in range(0,nslices)]
         jobj['SliceEncodingDirection'] = 'k'
         jobj['SliceTiming'] = [0 for x in basetimes]
         jobj['SliceTiming'][0::2] = basetimes[0:math.ceil(nslices/2)]
